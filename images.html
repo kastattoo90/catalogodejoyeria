@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Obsidiana & Plata - Catálogo Ancestral</title>
+    <style>
+        :root {
+            --bg-primary: #0c0a09;
+            --bg-card: #1c1917;
+            --bg-card-hover: #292524;
+            --accent-gold: #d4a853;
+            --accent-jade: #4ade80;
+            --accent-obsidian: #78716c;
+            --accent-terracotta: #ea580c;
+            --text-primary: #fafaf9;
+            --text-secondary: #a8a29e;
+            --text-muted: #78716c;
+            --border-subtle: #292524;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .header {
+            text-align: center;
+            padding: 3rem 1rem 2rem;
+            background: linear-gradient(180deg, rgba(212,168,83,0.08) 0%, transparent 100%);
+            border-bottom: 1px solid var(--border-subtle);
+            position: relative;
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, transparent, var(--accent-gold), var(--accent-jade), var(--accent-terracotta), transparent);
+        }
+        .header h1 {
+            font-size: 2.8rem;
+            font-weight: 300;
+            letter-spacing: 0.15em;
+            color: var(--accent-gold);
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 40px rgba(212,168,83,0.2);
+        }
+        .header .subtitle {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+        }
+        .header .tagline {
+            font-style: italic;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        .header .count-badge {
+            display: inline-block;
+            margin-top: 1.5rem;
+            padding: 0.5rem 1.5rem;
+            border: 1px solid var(--accent-gold);
+            border-radius: 100px;
+            font-size: 0.85rem;
+            color: var(--accent-gold);
+            letter-spacing: 0.1em;
+        }
+        .filters-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+            padding: 1.5rem 1rem;
+            border-bottom: 1px solid var(--border-subtle);
+            background: rgba(28,25,23,0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .filter-group { display: flex; gap: 0.4rem; align-items: center; }
+        .filter-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--text-muted);
+            margin-right: 0.3rem;
+        }
+        .filter-btn {
+            padding: 0.4rem 0.9rem;
+            border: 1px solid var(--border-subtle);
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            letter-spacing: 0.05em;
+        }
+        .filter-btn:hover { border-color: var(--accent-gold); color: var(--accent-gold); }
+        .filter-btn.active {
+            background: var(--accent-gold);
+            color: var(--bg-primary);
+            border-color: var(--accent-gold);
+            font-weight: 600;
+        }
+        .filter-btn.style-maya.active { background: #f59e0b; border-color: #f59e0b; }
+        .filter-btn.style-nahuat.active { background: #dc2626; border-color: #dc2626; }
+        .filter-btn.style-bio.active { background: #4ade80; border-color: #4ade80; color: #064e3b; }
+        .filter-btn.style-geo.active { background: #a78bfa; border-color: #a78bfa; }
+        .stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        .stat-item { text-align: center; }
+        .stat-value { font-size: 1.5rem; font-weight: 600; color: var(--accent-gold); }
+        .stat-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); }
+        .catalog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            padding: 2rem;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        .jewel-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            position: relative;
+            cursor: pointer;
+        }
+        .jewel-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent-gold);
+            box-shadow: 0 12px 40px rgba(212,168,83,0.1);
+        }
+        .jewel-card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .jewel-card:hover::after { opacity: 1; }
+        .jewel-card.style-maya::after { background: linear-gradient(90deg, #f59e0b, #d97706); }
+        .jewel-card.style-nahuat::after { background: linear-gradient(90deg, #dc2626, #991b1b); }
+        .jewel-card.style-bio::after { background: linear-gradient(90deg, #4ade80, #16a34a); }
+        .jewel-card.style-geo::after { background: linear-gradient(90deg, #a78bfa, #7c3aed); }
+        .card-visual {
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, rgba(212,168,83,0.03) 0%, rgba(28,25,23,1) 100%);
+        }
+        .card-visual img {
+            width: 140px;
+            height: 140px;
+            object-fit: contain;
+            transition: transform 0.5s ease;
+            border-radius: 8px;
+        }
+        .jewel-card:hover .card-visual img { transform: scale(1.08); }
+        .style-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            padding: 0.25rem 0.6rem;
+            border-radius: 100px;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 600;
+            backdrop-filter: blur(8px);
+        }
+        .style-badge.maya { background: rgba(245,158,11,0.2); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
+        .style-badge.nahuat { background: rgba(220,38,38,0.2); color: #fca5a5; border: 1px solid rgba(220,38,38,0.3); }
+        .style-badge.bio { background: rgba(74,222,128,0.15); color: #86efac; border: 1px solid rgba(74,222,128,0.3); }
+        .style-badge.geo { background: rgba(167,139,250,0.2); color: #c4b5fd; border: 1px solid rgba(167,139,250,0.3); }
+        .card-body { padding: 1.2rem; }
+        .card-code {
+            font-family: 'Courier New', monospace;
+            font-size: 0.7rem;
+            color: var(--accent-gold);
+            letter-spacing: 0.1em;
+            margin-bottom: 0.4rem;
+            opacity: 0.7;
+        }
+        .card-title { font-size: 1.05rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.3rem; line-height: 1.3; }
+        .card-type { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.6rem; }
+        .card-desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 0.8rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .card-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 0.8rem;
+            border-top: 1px solid var(--border-subtle);
+        }
+        .card-weight { font-size: 0.75rem; color: var(--text-muted); }
+        .card-price { font-size: 1rem; font-weight: 600; color: var(--accent-gold); }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 2rem;
+            border-top: 1px solid var(--border-subtle);
+        }
+        .page-btn {
+            padding: 0.5rem 0.9rem;
+            border: 1px solid var(--border-subtle);
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: 4px;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+        .page-btn:hover:not(:disabled) { border-color: var(--accent-gold); color: var(--accent-gold); }
+        .page-btn.active { background: var(--accent-gold); color: var(--bg-primary); border-color: var(--accent-gold); font-weight: 600; }
+        .page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        .page-info { font-size: 0.85rem; color: var(--text-muted); margin: 0 1rem; }
+        .footer {
+            text-align: center;
+            padding: 3rem 1rem;
+            border-top: 1px solid var(--border-subtle);
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+        .footer .brand { color: var(--accent-gold); font-size: 1.2rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 0.5rem; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-primary); }
+        ::-webkit-scrollbar-thumb { background: var(--border-subtle); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent-gold); }
+        @media (max-width: 600px) {
+            .header h1 { font-size: 1.8rem; }
+            .catalog-grid { grid-template-columns: 1fr; padding: 1rem; }
+            .filters-bar { gap: 0.3rem; }
+            .filter-btn { padding: 0.3rem 0.6rem; font-size: 0.7rem; }
+        }
+        /* Modal styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            max-width: 500px;
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+        .modal-close {
+            position: absolute;
+            top: 1rem; right: 1rem;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 10;
+        }
+        .modal-image {
+            width: 100%;
+            height: 400px;
+            object-fit: contain;
+            background: var(--bg-primary);
+        }
+        .modal-info { padding: 1.5rem; }
+        .modal-title { font-size: 1.3rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem; }
+        .modal-desc { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 1rem; }
+        .modal-meta { display: flex; justify-content: space-between; padding-top: 1rem; border-top: 1px solid var(--border-subtle); }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Plata 925</h1>
+        <div class="subtitle">Colección Ancestral</div>
+        <div class="tagline">
+            Mil piezas únicas forjadas en plata esterlina, donde la geometría sagrada se encuentra con la savia de la selva,
+            y los dioses de obsidiana dialogan con las formas orgánicas de la vida misma.
+        </div>
+        <div class="count-badge">1000 Piezas Artesanales</div>
+    </div>
+
+    <div class="filters-bar" id="filtersBar">
+        <div class="filter-group">
+            <span class="filter-label">Categoría:</span>
+            <button class="filter-btn active" data-filter="type" data-value="all">Todas</button>
+            <button class="filter-btn" data-filter="type" data-value="dije">Dijes</button>
+            <button class="filter-btn" data-filter="type" data-value="collar">Collares</button>
+            <button class="filter-btn" data-filter="type" data-value="pulsera">Pulseras</button>
+            <button class="filter-btn" data-filter="type" data-value="brazalete">Brazaletes</button>
+            <button class="filter-btn" data-filter="type" data-value="anillo">Anillos</button>
+            <button class="filter-btn" data-filter="type" data-value="arete">Aretes</button>
+            <button class="filter-btn" data-filter="type" data-value="piercing">Piercings</button>
+        </div>
+        <div class="filter-group">
+            <span class="filter-label">Estilo:</span>
+            <button class="filter-btn active" data-filter="style" data-value="all">Todos</button>
+            <button class="filter-btn style-maya" data-filter="style" data-value="maya">Maya</button>
+            <button class="filter-btn style-nahuat" data-filter="style" data-value="nahuat">Náhuat</button>
+            <button class="filter-btn style-bio" data-filter="style" data-value="bio">Bio-Orgánico</button>
+            <button class="filter-btn style-geo" data-filter="style" data-value="geo">Geométrico</button>
+        </div>
+    </div>
+
+    <div class="stats-bar" id="statsBar">
+        <div class="stat-item">
+            <div class="stat-value" id="statTotal">1000</div>
+            <div class="stat-label">Piezas</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value" id="statShowing">12</div>
+            <div class="stat-label">Mostrando</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value" id="statPage">1</div>
+            <div class="stat-label">Página</div>
+        </div>
+    </div>
+
+    <div class="catalog-grid" id="catalogGrid"></div>
+    <div class="pagination" id="pagination"></div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <img class="modal-image" id="modalImage" src="" alt="">
+            <div class="modal-info">
+                <div class="modal-title" id="modalTitle"></div>
+                <div class="modal-desc" id="modalDesc"></div>
+                <div class="modal-meta">
+                    <span id="modalWeight"></span>
+                    <span id="modalPrice" style="color: var(--accent-gold); font-weight: 600;"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="brand">Obsidiana &amp; Plata</div>
+        <div>Hecho a mano con fuego ancestral · Plata 925 · Guatemala</div>
+        <div style="margin-top:0.5rem; font-size:0.7rem; color:#57534e;">
+            Cada pieza es única. Las formas orgánicas varían ligeramente, como la naturaleza misma.
+        </div>
+    </div>
+
+    <script src="catalog_data.js"></script>
+    <script>
+        // ========== RENDERING ==========
+        let currentType = 'all';
+n        let currentStyle = 'all';
+        let currentPage = 1;
+        const ITEMS_PER_PAGE = 12;
+
+        function getFilteredItems() {
+            return ALL_ITEMS.filter(item => {
+                const typeMatch = currentType === 'all' || item.type === currentType;
+                const styleMatch = currentStyle === 'all' || item.style === currentStyle;
+                return typeMatch && styleMatch;
+            });
+        }
+
+        function renderCatalog() {
+            const filtered = getFilteredItems();
+            const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
+            if (currentPage > totalPages) currentPage = Math.max(1, totalPages);
+
+            const start = (currentPage - 1) * ITEMS_PER_PAGE;
+            const pageItems = filtered.slice(start, start + ITEMS_PER_PAGE);
+
+            const grid = document.getElementById('catalogGrid');
+            grid.innerHTML = pageItems.map(item => `
+                <div class="jewel-card style-${item.style}" onclick="openModal('${item.code}')">
+                    <div class="card-visual">
+                        <img src="${item.image}" alt="${item.title}" loading="lazy" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 140 140%22><rect fill=%22%231c1917%22 width=%22140%22 height=%22140%22/><text fill=%22%23d4a853%22 x=%2270%22 y=%2270%22 text-anchor=%22middle%22 font-size=%2212%22>${item.code}</text></svg>'">
+                        <span class="style-badge ${item.style}">${item.style_label}</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-code">${item.code}</div>
+                        <div class="card-title">${item.title}</div>
+                        <div class="card-type">${item.type_label}</div>
+                        <div class="card-desc">${item.desc}</div>
+                        <div class="card-meta">
+                            <span class="card-weight">${item.weight}</span>
+                            <span class="card-price">${item.price}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('statTotal').textContent = ALL_ITEMS.length;
+            document.getElementById('statShowing').textContent = filtered.length;
+            document.getElementById('statPage').textContent = `${currentPage} / ${Math.max(1, totalPages)}`;
+
+            renderPagination(filtered.length, totalPages);
+        }
+
+        function renderPagination(total, totalPages) {
+            const pag = document.getElementById('pagination');
+            if (totalPages <= 1) { pag.innerHTML = ''; return; }
+
+            let html = '';
+            html += `<button class="page-btn" onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>← Anterior</button>`;
+
+            const maxVisible = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+            let endPage = Math.min(totalPages, startPage + maxVisible - 1);
+            if (endPage - startPage < maxVisible - 1) {
+                startPage = Math.max(1, endPage - maxVisible + 1);
+            }
+
+            if (startPage > 1) {
+                html += `<button class="page-btn" onclick="goToPage(1)">1</button>`;
+                if (startPage > 2) html += `<span class="page-info">...</span>`;
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+            }
+
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) html += `<span class="page-info">...</span>`;
+                html += `<button class="page-btn" onclick="goToPage(${totalPages})">${totalPages}</button>`;
+            }
+
+            html += `<button class="page-btn" onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>Siguiente →</button>`;
+            pag.innerHTML = html;
+        }
+
+        function goToPage(page) {
+            currentPage = page;
+            renderCatalog();
+            document.getElementById('catalogGrid').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // ========== MODAL ==========
+        function openModal(code) {
+            const item = ALL_ITEMS.find(i => i.code === code);
+            if (!item) return;
+            document.getElementById('modalImage').src = item.image;
+            document.getElementById('modalTitle').textContent = item.title;
+            document.getElementById('modalDesc').textContent = item.desc;
+            document.getElementById('modalWeight').textContent = 'Peso: ' + item.weight;
+            document.getElementById('modalPrice').textContent = item.price;
+            document.getElementById('modalOverlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(event) {
+            if (event && event.target !== event.currentTarget) return;
+            document.getElementById('modalOverlay').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // ========== EVENT LISTENERS ==========
+        document.getElementById('filtersBar').addEventListener('click', (e) => {
+            if (!e.target.classList.contains('filter-btn')) return;
+            const filter = e.target.dataset.filter;
+            const value = e.target.dataset.value;
+
+            document.querySelectorAll(`.filter-btn[data-filter="${filter}"]`).forEach(btn => btn.classList.remove('active'));
+            e.target.classList.add('active');
+
+            if (filter === 'type') currentType = value;
+            else currentStyle = value;
+
+            currentPage = 1;
+            renderCatalog();
+        });
+
+        // ========== INIT ==========
+        renderCatalog();
+    </script>
+</body>
+</html>

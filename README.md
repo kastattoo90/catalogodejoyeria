@@ -1,4 +1,4 @@
-# catalogodejoyeriacatalogo-joyeria/          ← Nombre del repositorio
+catalogo-joyeria/          ← Nombre del repositorio
 │
 ├── index.html             ← El catálogo interactivo (principal)
 ├── catalog_data.js        ← Los datos de las 1000 piezas
